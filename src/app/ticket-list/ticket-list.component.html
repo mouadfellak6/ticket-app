@@ -1,0 +1,74 @@
+<div class="container">
+    <h2>Ticket Management</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ticket ID</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Date Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let ticket of tickets">
+                <td>{{ ticket.id }}</td>
+                <td>{{ ticket.description }}</td>
+                <td>{{ ticket.status }}</td>
+                <td>{{ ticket.createdDate | date: 'short' }}</td>
+                <td>
+                    <button class="edit-btn" (click)="editForm(ticket)">Edit</button>
+                    <button class="delete-btn" (click)="deleteTicket(ticket.id!)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button class="add-btn" (click)="showForm()">Add New Ticket</button>
+
+    <!-- Pop-up Form -->
+    <div class="popup-form" *ngIf="showPopupForm">
+        <div class="popup-header">
+            <h3>{{ isEditMode ? 'Edit Ticket' : 'Add New Ticket' }}</h3>
+            <button class="close-btn" (click)="hideForm()">×</button>
+        </div>
+        <div class="popup-body">
+            <form (ngSubmit)="isEditMode ? editTicket() : addTicket()" #ticketForm="ngForm">
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea 
+                        [(ngModel)]="newTicket.description" 
+                        name="description" 
+                        class="form-control" 
+                        required 
+                        rows="4">
+                    </textarea>
+                    <div *ngIf="ticketForm.controls['description']?.invalid && (ticketForm.controls['description']?.touched || ticketForm.controls['description']?.dirty)" class="error">
+                        Description is required.
+                    </div>
+                </div>
+                
+                <!-- Conditionally display the status field only in Edit mode -->
+                <div class="form-group" *ngIf="isEditMode">
+                    <label for="status">Status</label>
+                    <select 
+                        [(ngModel)]="newTicket.status" 
+                        name="status" 
+                        class="form-control" 
+                        required>
+                        <option value="Open">Open</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="btn btn-primary" 
+                    [disabled]="ticketForm.invalid">
+                    {{ isEditMode ? 'Save Changes' : 'Add Ticket' }}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
